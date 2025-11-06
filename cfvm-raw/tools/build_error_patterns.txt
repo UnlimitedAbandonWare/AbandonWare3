@@ -1,0 +1,10 @@
+# Common Java/Gradle compile errors (regex)
+cannot find symbol
+package .* does not exist
+symbol:\s+class\s+.*
+symbol:\s+method\s+.*
+class file for .* not found
+# Lombok issues
+lombok.* not found
+# placeholder token to block
+\STUFF3_DISABLED\}

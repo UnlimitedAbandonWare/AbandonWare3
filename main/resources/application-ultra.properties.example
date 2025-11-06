@@ -1,0 +1,5 @@
+# Example config for LLM provider (do NOT commit real secrets)
+llm.provider=groq
+llm.base-url=https://api.groq.com/openai/v1
+llm.api-key=${GROQ_API_KEY}
+llm.chat-model=llama-3.1-8b-instant

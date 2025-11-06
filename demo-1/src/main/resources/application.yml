@@ -1,0 +1,21 @@
+domains:
+  whitelist: gov.kr,go.kr,ac.kr,who.int,nature.com
+retrieval:
+  vector:
+    enabled: true
+probe:
+  search:
+    enabled: false
+onnx:
+  enabled: true
+gate:
+  citation:
+    enabled: true
+    min: 3
+  finalSigmoid:
+    enabled: true
+    k: 12.0
+    x0: 0.0
+upstash:
+  cache:
+    ttl-seconds: 3600

@@ -1,0 +1,7 @@
+# Example Spring Boot application properties (inject via ENV or secret store)
+spring.datasource.url=${SPRING_DATASOURCE_URL}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+server.ssl.key-store=${SERVER_SSL_KEY_STORE}
+server.ssl.key-store-password=${SERVER_SSL_KEY_STORE_PASSWORD}
+server.ssl.key-password=${SERVER_SSL_KEY_PASSWORD}

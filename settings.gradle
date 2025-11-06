@@ -1,0 +1,29 @@
+rootProject.name = "src111_merge15"
+include("app")
+
+include("lms-core")
+include("cfvm-raw")
+
+include 'demo-1'
+
+// [GPTPRO] apply build error guard plugin
+apply from: "gradle/buildErrorGuard.gradle.kts"
+
+// [GPTPRO] sourceSets excludes to remove duplicates
+sourceSets {
+    main {
+        java {
+            exclude ['**/_abandonware_backup/**', '**/java_clean/**', 'extras/**', 'backup/**']
+        }
+    }
+}
+
+
+// --- Jammini: resilient include for lms-core (auto + fallback) ---
+def lmsCoreDir = file('lms-core')
+if (lmsCoreDir.exists()) {
+    include(':lms-core')
+    project(':lms-core').projectDir = lmsCoreDir
+} else {
+    println("[demo-1] :lms-core not found. 루트 settings.gradle에 include(':lms-core')를 추가하거나 -PlmsJar=/path/to/lms-core.jar 로 외부 JAR을 지정하세요.")
+}
