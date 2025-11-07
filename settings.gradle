@@ -1,29 +1,27 @@
 rootProject.name = "src111_merge15"
+
+// Keep only stable modules; include optional ones conditionally
 include("app")
+if (file('demo-1').exists()) include("demo-1")
+if (file('cfvm-raw').exists()) include("cfvm-raw")
 
-include("lms-core")
-include("cfvm-raw")
+// Optional lms-core: include if directory exists, else rely on -PlmsJar
+if (file('lms-core').exists()) {
+    include(':lms-core')
+    project(':lms-core').projectDir = file('lms-core')
+    println("[settings] :lms-core included from source directory.")
+} else {
+    println("[settings] :lms-core not found. Proceeding without module. Pass -PlmsJar=/path/to/lms-core.jar to use a prebuilt jar.")
+}
 
-include 'demo-1'
-
-// [GPTPRO] apply build error guard plugin
+// Build error guard (preflight) for ellipsis / placeholders
 apply from: "gradle/buildErrorGuard.gradle.kts"
 
-// [GPTPRO] sourceSets excludes to remove duplicates
+// Exclude abandoned/backup sources
 sourceSets {
     main {
         java {
-            exclude ['**/_abandonware_backup/**', '**/java_clean/**', 'extras/**', 'backup/**']
+            exclude '**/_abandonware_backup/**', '**/java_clean/**', 'extras/**', 'backup/**'
         }
     }
-}
-
-
-// --- Jammini: resilient include for lms-core (auto + fallback) ---
-def lmsCoreDir = file('lms-core')
-if (lmsCoreDir.exists()) {
-    include(':lms-core')
-    project(':lms-core').projectDir = lmsCoreDir
-} else {
-    println("[demo-1] :lms-core not found. 루트 settings.gradle에 include(':lms-core')를 추가하거나 -PlmsJar=/path/to/lms-core.jar 로 외부 JAR을 지정하세요.")
 }

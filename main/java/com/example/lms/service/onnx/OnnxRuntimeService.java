@@ -41,6 +41,35 @@ import java.util.Set;
 )
 public class OnnxRuntimeService {
 
+    /**
+     * Device ID to use when initialising the CUDA execution provider. By
+     * default, this is 1 to allow separation of responsibilities across
+     * multiple GPUs. When the property {@code onnx.device-id} is defined
+     * it will override this default.
+     */
+    @Value("${onnx.device-id:1}")
+    private int deviceId;
+
+    /**
+     * Semaphore used to limit concurrent ONNX inference calls. Injected via
+     * Spring configuration. The {@code zsys.onnx.max-concurrency} property
+     * should define the maximum number of permits; see the bean defined in
+     * configuration for details. A default of 1 is used when unspecified.
+     */
+    private final java.util.concurrent.Semaphore limiter;
+
+    /**
+     * Construct the service with a concurrency limiter. Spring will
+     * automatically provide the {@code Semaphore} bean defined in the
+     * application context. Without this constructor the default no‑args
+     * constructor would be used, preventing limiter injection.
+     *
+     * @param onnxLimiter semaphore controlling concurrent inference
+     */
+    public OnnxRuntimeService(java.util.concurrent.Semaphore onnxLimiter) {
+        this.limiter = onnxLimiter;
+    }
+
     // 개선: 로거 추가
     private static final Logger log = LoggerFactory.getLogger(OnnxRuntimeService.class);
 
@@ -167,11 +196,13 @@ public class OnnxRuntimeService {
                 // session remains null but we still mark available=true so that
                 // scorePair() can compute alternative scores.
                 try {
+                    // Initialise the session for GPU execution. Use the configured
+                    // deviceId to bind to a specific CUDA device and restrict
+                    // intra‑op threading to a single thread to reduce contention.
                     OrtSession.SessionOptions opts = new OrtSession.SessionOptions();
-                    String provider = (executionProvider == null ? "" : executionProvider.trim().toLowerCase());
-                    if ("cuda".equals(provider)) {
-                        opts.addCUDA();
-                    }
+                    // Register CUDA execution provider with explicit device id.
+                    opts.addCUDA(deviceId);
+                    opts.setIntraOpNumThreads(1);
                     this.session = env.createSession(bytes, opts);
                 } catch (Throwable ignore) {
                     this.session = null;
@@ -419,70 +450,92 @@ public class OnnxRuntimeService {
      * encourages diversity relative to the embedding reranker.
      */
     public double scorePair(String query, String document) {
-        // 하드 컷으로 전처리(토큰화/런타임 비용 절감)
-        if (query != null && query.length() > maxChars) {
-            query = query.substring(0, maxChars);
-        }
-        if (document != null && document.length() > maxChars) {
-            document = document.substring(0, maxChars);
-        }
-        double lex = computeJaccardSimilarity(query == null ? "" : query, document == null ? "" : document);
-        // If no model is available return lexical similarity directly
-        if (!available) {
+        // Acquire a permit for concurrent inference. If interrupted during
+        // acquisition we fall back to lexical similarity immediately.
+        boolean permit = false;
+        try {
+            if (limiter != null) {
+                limiter.acquire();
+                permit = true;
+            }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            double lex = computeJaccardSimilarity(query == null ? "" : query,
+                                                 document == null ? "" : document);
             return lex;
         }
-        // When a valid ONNX session exists attempt to run inference.  If any
-        // exception is thrown the code falls back to the inverted lexical score.
-        if (session != null) {
-            try {
-                Enc enc = encodePair(query, document, maxSeqLen);
-                if (enc.inputIds.length > 0) {
-                    long[][] inputIds = new long[][] { toLong(enc.inputIds) };
-                    long[][] attn     = new long[][] { toLong(enc.attn) };
-                    long[][] tt       = new long[][] { toLong(enc.tokenTypes) };
-                    java.util.Map<String, OnnxTensor> in = new java.util.HashMap<>();
-                    java.util.Set<String> names = session.getInputInfo().keySet();
-                    String idName = pick(names, "input_ids");
-                    in.put(idName, OnnxTensor.createTensor(env, inputIds));
-                    if (names.contains("attention_mask")) in.put("attention_mask", OnnxTensor.createTensor(env, attn));
-                    if (names.contains("token_type_ids")) in.put("token_type_ids", OnnxTensor.createTensor(env, tt));
-                    // 입력 텐서 수동 close를 위해 try/finally 사용
-                    OnnxTensor t0 = in.get(idName);
-                    OnnxTensor t1 = in.get("attention_mask");
-                    OnnxTensor t2 = in.get("token_type_ids");
-                    try (OrtSession.Result out = session.run(in)) {
-                        for (String k : session.getOutputInfo().keySet()) {
-                            var vOpt = out.get(k); // Optional<OnnxValue>
-                            var v = vOpt.orElse(null);
-                            if (v instanceof OnnxTensor t) {
-                                float[] flat = flatten(t);
+        try {
+            // Hard cut pre‑processing (truncate very long strings)
+            if (query != null && query.length() > maxChars) {
+                query = query.substring(0, maxChars);
+            }
+            if (document != null && document.length() > maxChars) {
+                document = document.substring(0, maxChars);
+            }
+            double lex = computeJaccardSimilarity(query == null ? "" : query,
+                                                 document == null ? "" : document);
+            // If no model is available return lexical similarity directly
+            if (!available) {
+                return lex;
+            }
+            // Attempt inference when a session exists
+            if (session != null) {
+                try {
+                    Enc enc = encodePair(query, document, maxSeqLen);
+                    if (enc.inputIds.length > 0) {
+                        long[][] inputIds = new long[][] { toLong(enc.inputIds) };
+                        long[][] attn     = new long[][] { toLong(enc.attn) };
+                        long[][] tt       = new long[][] { toLong(enc.tokenTypes) };
+                        java.util.Map<String, OnnxTensor> in = new java.util.HashMap<>();
+                        java.util.Set<String> names = session.getInputInfo().keySet();
+                        String idName = pick(names, "input_ids");
+                        in.put(idName, OnnxTensor.createTensor(env, inputIds));
+                        if (names.contains("attention_mask")) {
+                            in.put("attention_mask", OnnxTensor.createTensor(env, attn));
+                        }
+                        if (names.contains("token_type_ids")) {
+                            in.put("token_type_ids", OnnxTensor.createTensor(env, tt));
+                        }
+                        // references for cleanup
+                        OnnxTensor t0 = in.get(idName);
+                        OnnxTensor t1 = in.get("attention_mask");
+                        OnnxTensor t2 = in.get("token_type_ids");
+                        try (OrtSession.Result out = session.run(in)) {
+                            for (String k : session.getOutputInfo().keySet()) {
+                                var vOpt = out.get(k);
+                                var v = vOpt.orElse(null);
+                                if (v instanceof OnnxTensor t) {
+                                    float[] flat = flatten(t);
                                     if (flat.length > 0) {
-                                    float raw = flat[0];
-                                    if (normalize) {
-                                        // Apply sigmoid normalisation to map raw logits into [0,1].  In
-                                        // many cross-encoder architectures the output is an unbounded
-                                        // activation which benefits from a logistic transform.  Guard
-                                        // against overflow by clamping extremely large magnitudes.
-                                        double x = Math.max(-50.0, Math.min(50.0, raw));
-                                        double sigmoid = 1.0 / (1.0 + Math.exp(-x));
-                                        return (float) sigmoid;
+                                        float raw = flat[0];
+                                        if (normalize) {
+                                            // Apply sigmoid normalisation to map raw logits into [0,1]
+                                            double x = Math.max(-50.0, Math.min(50.0, raw));
+                                            double sigmoid = 1.0 / (1.0 + Math.exp(-x));
+                                            return sigmoid;
+                                        }
+                                        return raw;
                                     }
-                                    return raw;
                                 }
                             }
+                        } finally {
+                            if (t2 != null) try { t2.close(); } catch (Exception ignore) {}
+                            if (t1 != null) try { t1.close(); } catch (Exception ignore) {}
+                            if (t0 != null) try { t0.close(); } catch (Exception ignore) {}
                         }
-                    } finally {
-                        if (t2 != null) try { t2.close(); } catch (Exception ignore) {}
-                        if (t1 != null) try { t1.close(); } catch (Exception ignore) {}
-                        if (t0 != null) try { t0.close(); } catch (Exception ignore) {}
                     }
+                } catch (Throwable ignore) {
+                    // ignore and fall back to inverted lexical similarity
                 }
-            } catch (Throwable ignore) {
-                // ignore and fall back
+            }
+            // When inference fails return inverted lexical similarity
+            return 1.0 - lex;
+        } finally {
+            // Always release semaphore permit when acquired
+            if (permit && limiter != null) {
+                limiter.release();
             }
         }
-        // When a model is present but inference failed return an inverted lexical score.
-        return 1.0 - lex;
     }
 
     // --- Accessors for health checks and configuration ---

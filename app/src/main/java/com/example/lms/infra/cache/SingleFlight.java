@@ -1,13 +1,30 @@
 package com.example.lms.infra.cache;
 
-import java.util.concurrent.*;
-import java.util.function.Supplier;
-import java.util.concurrent.ConcurrentHashMap;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class SingleFlight<K,V> {
-    private final ConcurrentHashMap<K, CompletableFuture<V>> inFlight = new ConcurrentHashMap<>();
-    public CompletableFuture<V> computeIfAbsent(K key, Supplier<CompletableFuture<V>> loader) {
-        return inFlight.computeIfAbsent(key, k -> loader.get())
-            .whenComplete((v, e) -> inFlight.remove(key));
-    }
+/**
+ * Mark a method as a single‑flight guarded section.  Concurrent calls with
+ * the same key will share the result of the first execution and skip
+ * subsequent invocations until the first completes.  The key must be
+ * supplied via a SpEL expression referencing method arguments.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface SingleFlight {
+    /**
+     * SpEL expression used to compute the deduplication key from method
+     * arguments.  For example, {@code "#a0.id"} references the first
+     * argument's {@code id} property.  The expression is evaluated with
+     * variables {@code a0}, {@code a1}, etc. bound to the respective
+     * arguments.
+     */
+    String keyExpr();
+    /**
+     * Maximum number of seconds to hold the distributed lock.  After
+     * this TTL the lock will automatically expire in Redis.
+     */
+    int ttlSeconds() default 30;
 }

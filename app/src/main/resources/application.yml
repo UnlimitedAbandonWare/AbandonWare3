@@ -1,39 +1,10 @@
 server:
   port: 8080
-spring:
-  main:
-    banner-mode: console
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: never
-rag:
-  rerank:
-    dpp:
-      enabled: true
-      lambda: 0.65
-    topKFast: 64
-    topKFinal: 12
-gate:
-  citation:
-    enabled: true
-    min: 3
-  finalSigmoid:
-    enabled: true
-    k: 12.0
-    x0: 0.0
-onnx:
-  enabled: true
+
 retrieval:
-  kalloc:
-    enabled: true
-    totalK: 32
   vector:
     enabled: true
+
 naver:
   hedge:
     enabled: true
@@ -44,9 +15,66 @@ naver:
     cache:
       enabled: true
       ttl-seconds: 3600
+
+onnx:
+  enabled: true
+
+# Addons-level configuration.  This section tunes the
+# concurrency limit of the ONNX cross‑encoder to avoid GPU
+# contention.  See P0‑2 in the patch notes.  Setting
+# max-concurrent to 2 ensures no more than two cross‑encoder
+# requests run in parallel on GPU, improving stability on 2×3060.
+addons:
+  onnx:
+    max-concurrent: 2
+    queue-wait-ms: 200
+
 probe:
   search:
     enabled: true
+
 upstash:
   cache:
     ttl-seconds: 3600
+
+gate:
+  citation:
+    enabled: true
+    min: 3
+  finalSigmoid:
+    enabled: true
+    k: 12.0
+    x0: 0.0
+
+domains:
+  whitelist: gov.kr,go.kr,ac.kr,who.int,nature.com
+
+# --- Local LLM router (OpenAI-compatible, vLLM) ---
+llm:
+  mode: local-preferred
+  router:
+    policy: capacity_first
+    timeout-ms: 30000
+    stream: true
+    min-tokens: 64
+  local:
+    - id: vllm0
+      base-url: http://127.0.0.1:8000/v1
+      model: mistral-7b-instruct
+    - id: vllm1
+      base-url: http://127.0.0.1:8001/v1
+      model: llama3-8b-instruct
+    # A two‑GPU tensor‑parallel vLLM server for long prompts and large outputs.
+    # Requests that exceed the token thresholds defined in the scheduler
+    # will be routed to this backend (port 8002).  See DualGpuScheduler for
+    # routing logic.  When not running a TP2 server locally this entry can
+    # be removed.
+    - id: vllm-tp2
+      base-url: http://127.0.0.1:8002/v1
+      model: mistral-14b-instruct
+  fallback:
+    openai:
+      enabled: false
+      base-url: https://api.openai.com/v1
+      model: gpt-4o-mini
+      api-key: ${OPENAI_API_KEY:}

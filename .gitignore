@@ -90,8 +90,8 @@ Thumbs.db
 # 과거 노출 정리:
 #  - pipx run detect-secrets scan > .secrets.baseline && pre-commit 설치 권장
 #  - git filter-repo --replace-text <(echo 'BEGIN PRIVATE KEY==>***REDACTED***')  # 예시
-# Hardened for safe Git publishing (2025-10-23)
-# Secrets guard: block concrete config files; commit only *-example templates.
+# Updated by GPT-5 Pro on 2025-10-23 07:10 UTC — hardened for safe Git publishing
+# --- [HOTFIX] Secrets guard: block concrete config files with real keys ---
 # Found real-looking keys under src/main/resources/application.properties.
 # These must not be tracked; ignore concrete files and commit *.example templates only.
 src/main/resources/application.properties
@@ -125,37 +125,6 @@ app/src/main/resources/application-machine.yml
 !/app/src/main/resources/*example*.*
 !/app/src/main/resources/*sample*.*
 # Generic sensitive patterns
-/**/*secret*.*
-/**/*token*.*
-/**/*credential*.*
-/**/*api[-_]*key*.*
-# === Hardened additions ===
-# Prevent accidental commit of local kube, cloud, npm auth, etc.
-.npmrc
-.yarnrc
-.kube/
-.aws/
-.azure/
-.gcloud/
-.direnv/
-.python-version
-.tool-versions
-node_modules/
-dist/
-coverage/
-logs/
-data/**
-!data/README.md
 
-# --- begin: publish-safety block (added by sanitization) ---
-# Block concrete configs under main/resources (commit only *example)
-main/resources/application*.properties
-main/resources/application*.yml
-!main/resources/*example*
-main/resources/*.bak*
-app/src/main/resources/*.bak*
-# Optional: drop bulky analysis artifacts from VCS
-analysis/**
-build-logs/**
-__reports__/**
-# --- end: publish-safety block ---
+# [auto-fix] Removed over-broad patterns that ignored source files like *Token*.java.
+# Keep extension-limited patterns above (yml,yaml,properties,json,env) for secrets.

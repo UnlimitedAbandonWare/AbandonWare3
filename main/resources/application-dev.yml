@@ -1,0 +1,61 @@
+spring:
+  autoconfigure:
+    exclude:
+    - dev.langchain4j.spring.AiAutoConfiguration
+    - dev.langchain4j.spring.autoconfigure.LangChain4jAutoConfiguration
+    - dev.langchain4j.service.spring.AiServicesAutoConfiguration
+    - dev.langchain4j.model.openai.spring.autoconfigure.OpenAiAutoConfiguration
+  profiles: dev
+probe:
+  search:
+    enabled: true
+  admin-token: ''
+  max-noise-ratio: 0.15
+retrieval:
+  routing:
+    thresholds:
+      complexMinTokens: 14
+      topKSimple: 8
+      topKComplex: 20
+      topKWebRequired: 24
+      rerankMinCandidates: 8
+      budgetSimple: 0.3
+      budgetComplex: 0.4
+      budgetWeb: 0.5
+  vector:
+    enabled: true
+pass9x:
+  threshold: 0.8
+  minEvidence: 1
+onnx:
+  rerank:
+    maxConcurrent: 2
+    acquireTimeoutMs: 150
+    minBudgetMs: 250
+    minCandidatesForCross: 8
+  enabled: true
+budget:
+  request-time-ms: 3500
+naver:
+  hedge:
+    enabled: true
+    delay-ms: 120
+  search:
+    timeout-ms: 1200
+    web-top-k: 12
+ocr:
+  enabled: true
+  min-confidence: 0.78
+  vector:
+    enabled: true
+gate:
+  citation:
+    enabled: true
+    min: 3
+  finalSigmoid:
+    enabled: true
+    k: 12.0
+    x0: 0.0
+upstash:
+  cache:
+    ttl-seconds: 3600

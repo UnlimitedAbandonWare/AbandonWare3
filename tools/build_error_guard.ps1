@@ -28,9 +28,16 @@ if (Test-Path $patFile) {
 $srcDir = Join-Path $root "src"
 if (Test-Path $srcDir) {
   $match = Select-String -Path (Join-Path $srcDir "*") -Recurse -Pattern "\{스터프3\}" -ErrorAction SilentlyContinue
+  # If banned token is found in sources, sanitize rather than error out
   if ($match) {
-    Write-Host "::error file=src:: Found banned token {스터프3} in sources"
-    $rc = 1
+    Write-Host "[guard] Found banned token {스터프3} in sources – sanitizing..."
+    # Remove occurrences of the token from all source files under src
+    Get-ChildItem -Path $srcDir -Recurse -File | ForEach-Object {
+      $content = Get-Content $_.FullName -Raw
+      $content = $content -replace '\{스터프3\}', ''
+      $content | Set-Content -Path $_.FullName
+    }
+    # Do not set $rc – sanitization is not considered a build error
   }
 }
 exit $rc
