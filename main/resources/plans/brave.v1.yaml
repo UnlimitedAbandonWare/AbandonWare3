@@ -1,6 +1,0 @@
-plan:
-  webTopK: 18
-  officialSourcesOnly: true
-  minCitations: 3
-  onnxEnabled: true
-  dppTopK: 10

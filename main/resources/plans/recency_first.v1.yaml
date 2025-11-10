@@ -1,5 +1,0 @@
-id: recency_first.v1
-k_schedule: [16, 12, 8]
-overdrive: false
-official_sources_only: true
-onnx_enabled: true

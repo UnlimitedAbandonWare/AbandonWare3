@@ -1,4 +1,0 @@
-rootProject.name = "src111_merge15"
-include("app")
-
-include("lms-core")
