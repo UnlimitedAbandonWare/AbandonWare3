@@ -1,0 +1,21 @@
+agents:
+  - id: resume_llm_mcp
+    system: prompts/agents/resume_llm_mcp/system_ko.md
+    traits:
+      - prompts/traits/stuff4_resume_trait.md
+    merge:
+      order: [trait, system]
+      conflict: project_overrides_global
+    output:
+      path: out/resume_agent.prompt
+      encoding: utf-8
+
+probe:
+  search:
+    enabled: false
+  admin-token: ''
+
+
+retrieval:
+  vector:
+    enabled: true

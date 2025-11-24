@@ -1,0 +1,13 @@
+id: zero_break.v1
+retrieval:
+  webTopK: [8, 12, 16]
+  vectorTopK: [6, 8, 10]
+  extremeZ: false
+safety:
+  citationMin: 2
+budget:
+  timeMs: 2500
+  onnxMaxConcurrent: 2
+
+angerOverdrive:
+  pruneKs: [48, 32, 16, 8]

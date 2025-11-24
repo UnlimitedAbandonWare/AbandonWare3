@@ -1,0 +1,9 @@
+id: zero_break
+steps:
+  - task: RetrieveWeb
+  - task: RetrieveVector
+  - task: RetrieveKG
+  - task: FusionRRF
+  - task: BiEncoderRerank
+  - task: CrossEncoderRerank
+  - task: DirectAnswer

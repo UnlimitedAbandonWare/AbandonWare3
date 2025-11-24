@@ -1,0 +1,175 @@
+plugins {
+  id 'java'
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+  mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    testCompileOnly {
+        extendsFrom testAnnotationProcessor
+    }
+}
+
+
+dependencies {
+    implementation("io.github.resilience4j:resilience4j-spring-boot3:2.2.0")
+    implementation("com.upstash:upstash-redis:1.3.2")
+    implementation("ai.onnxruntime:onnxruntime:1.19.0")
+  // --- auto-injected by src111_merge15 build fix ---
+  compileOnly 'org.projectlombok:lombok:1.18.34'
+  annotationProcessor 'org.projectlombok:lombok:1.18.34'
+  testCompileOnly 'org.projectlombok:lombok:1.18.34'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+  compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.8.6'
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+}
+
+tasks.withType(JavaCompile).configureEach {
+  options.encoding = 'UTF-8'
+}
+
+
+// ---- Build Preflight (friendly checks for Lombok & SpotBugs annotations) ----
+tasks.register('preflight') {
+    doLast {
+        def missing = []
+        def c = configurations
+        def hasLombok = (c.compileOnly.allDependencies.any { it.group == 'org.projectlombok' && it.name == 'lombok' }) &&
+                        (c.annotationProcessor.allDependencies.any { it.group == 'org.projectlombok' && it.name == 'lombok' })
+        if (!hasLombok) {
+            missing << "Lombok (compileOnly + annotationProcessor)"
+        }
+        def hasSpotbugsAnn = c.compileOnly.allDependencies.any { it.group == 'com.github.spotbugs' && it.name == 'spotbugs-annotations' }
+        if (!hasSpotbugsAnn) {
+            missing << "SpotBugs Annotations (compileOnly)"
+        }
+        if (!missing.isEmpty()) {
+            throw new GradleException("Preflight failed. Missing dependencies: " + missing.join(", "))
+        } else {
+            logger.lifecycle("Preflight OK: Lombok & SpotBugs annotations present")
+        }
+    }
+}
+tasks.named('compileJava') { dependsOn('preflight') }
+
+
+
+
+// === Build Error Guard (auto-injected) ===
+tasks.register('errorGuard') {
+    doLast {
+        def logFile = file("$buildDir/reports/build.log")
+        if (!logFile.parentFile.exists()) logFile.parentFile.mkdirs()
+        def input = logFile.exists() ? logFile.text : ""
+        def pb = new ProcessBuilder("python3", "tools/build_error_guard.py")
+        pb.redirectErrorStream(true)
+        def p = pb.start()
+        p.outputStream.withWriter('UTF-8'){ it << input }
+        def out = p.inputStream.getText('UTF-8')
+        file("$buildDir/reports/error-guard.json").text = out
+        println "ErrorGuard report written to $buildDir/reports/error-guard.json"
+    }
+}
+// Hook to check for 
+gradle.buildFinished { result ->
+    def report = file("$buildDir/reports/error-guard.json")
+    if (report.exists()) {
+        def txt = report.text
+        if (txt.contains("_block")) {
+            throw new GradleException("빌드 차단:  패턴 감지됨 (ErrorGuard)")
+        }
+    }
+}
+
+
+// ===  Sanitizer (auto-injected) ===
+tasks.register('sanitize') {
+    doLast {
+        def pb = new ProcessBuilder("python3", "tools/sanitize_.py", project.projectDir.absolutePath)
+        pb.inheritIO()
+        def p = pb.start()
+        p.waitFor()
+    }
+}
+// Ensure sanitization runs before Java compilation
+tasks.matching { it.name.toLowerCase().contains("compile") }.configureEach {
+    dependsOn 'sanitize'
+}
+// Reconfigure Error Guard to scan workspace if logs are absent
+tasks.named('errorGuard').configure {
+    doLast {
+        def pb = new ProcessBuilder("python3", "tools/build_error_guard.py")
+        pb.environment().put("SCAN_DIR", project.projectDir.absolutePath)
+        pb.redirectErrorStream(true)
+        def p = pb.start()
+        def out = p.inputStream.getText('UTF-8')
+        file("$buildDir/reports/error-guard.json").text = out
+        println "ErrorGuard (workspace scan) → $buildDir/reports/error-guard.json"
+    }
+}
+
+// === Build error guard (auto-generated) ===
+tasks.register('errorGuard') {
+    group = 'verification'
+    description = 'Scan build logs and source for known error patterns and banned tokens (portable)'
+    doLast {
+        def tools = new File(rootDir, 'tools')
+        def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
+        def cmd = isWindows ? ['cmd','/c', new File(tools,'build_error_guard.bat').absolutePath]
+                            : ['bash', new File(tools,'build_error_guard.sh').absolutePath]
+        if (!tools.exists()) {
+            println "[errorGuard] tools dir missing: ${tools}"
+            return
+        }
+        def p = new ProcessBuilder(cmd).directory(rootDir).inheritIO().start()
+        def code = p.waitFor()
+        if (code != 0) throw new GradleException('errorGuard detected issues. See logs above.')
+    }
+}
+tasks.matching { it.name == 'compileJava' }.configureEach {
+    finalizedBy('errorGuard')
+}
+
+// [GPTPRO] apply build error guard plugin
+apply from: "gradle/buildErrorGuard.gradle.kts"
+
+// [GPTPRO] sourceSets excludes to remove duplicates
+sourceSets {
+    main {
+        java {
+            exclude ['**/_abandonware_backup/**', '**/java_clean/**', 'extras/**', 'backup/**']
+        }
+    }
+}
+
+
+sourceSets {
+  val main by getting {
+    java.exclude("**/_abandonware_backup/**",
+                 "**/java_clean/**",
+                 "extras/**",
+                 "backup/**")
+  }
+}
+
+// --- injected utility task ---
+tasks.register("soakQuick") {
+    group = "verification"
+    description = "Quick soak/probe without tests"
+    doLast {
+        println("Running quick soak (no tests)...")
+    }
+}
+// --- end injected utility task ---

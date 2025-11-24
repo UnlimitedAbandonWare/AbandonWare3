@@ -1,0 +1,25 @@
+# Common Java/Gradle compile errors (regex)
+cannot find symbol
+package .* does not exist
+symbol:\s+class\s+.*
+symbol:\s+method\s+.*
+class file for .* not found
+# Lombok issues
+lombok.* not found
+# placeholder token to block
+\STUFF3_DISABLED\}
+
+\
+        # YAML duplicate key / SnakeYAML
+        DuplicateKeyException
+        found duplicate key
+        while constructing a mapping
+        # Gradle project/module missing
+        Project with path ':lms-core' could not be found
+        project :lms-core not found
+        Could not resolve project :lms-core
+        # BootRun non-zero exit
+        finished with non-zero exit value
+        # banned placeholder token
+        \{스터프3\}
+

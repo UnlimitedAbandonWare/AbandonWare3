@@ -1,0 +1,27 @@
+rootProject.name = "src111_merge15"
+
+// Keep only stable modules; include optional ones conditionally
+include("app")
+if (file('demo-1').exists()) include("demo-1")
+if (file('cfvm-raw').exists()) include("cfvm-raw")
+
+// Optional lms-core: include if directory exists, else rely on -PlmsJar
+if (file('lms-core').exists()) {
+    include(':lms-core')
+    project(':lms-core').projectDir = file('lms-core')
+    println("[settings] :lms-core included from source directory.")
+} else {
+    println("[settings] :lms-core not found. Proceeding without module. Pass -PlmsJar=/path/to/lms-core.jar to use a prebuilt jar.")
+}
+
+// Build error guard (preflight) for ellipsis / placeholders
+apply from: "gradle/buildErrorGuard.gradle.kts"
+
+// Exclude abandoned/backup sources
+sourceSets {
+    main {
+        java {
+            exclude '**/_abandonware_backup/**', '**/java_clean/**', 'extras/**', 'backup/**'
+        }
+    }
+}

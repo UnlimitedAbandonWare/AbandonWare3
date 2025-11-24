@@ -1,0 +1,174 @@
+spring:
+  application:
+    name: src111-merge15
+  profiles:
+    active: local
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+server:
+  port: 8080
+
+probe:
+  search:
+    enabled: true
+  admin-token: ""
+
+planner:
+  enabled: true
+
+rerank:
+  diversity:
+    enabled: true
+    lambda: 0.7
+    topk: 10
+
+onnx:
+  enabled: true
+  max-concurrency: 2
+  acquire-timeout-ms: 150
+  inference-timeout-ms: 1800
+
+web:
+  singleflight:
+    enabled: true
+    ttl-ms: 3000
+
+fusion:
+  calib:
+    enabled: true
+  tail:
+    p: 3.0
+  cvar:
+    alpha: 0.15
+  weight:
+    ocr: 0.7
+
+rerank:
+  dpp:
+    k: 12
+    lambda: 0.7
+
+gate:
+  final:
+    k: 6.0
+    x0: 0.72
+  citation:
+    min: 3
+
+extremez:
+  enabled: true
+  q:
+    count: 18
+
+overdrive:
+  k:
+    schedule: [48,32,16,8]
+
+# --- patched by automation ---
+quality:
+  gate:
+    k: 8.0
+    x0: 0.6
+    min-citations: 3
+guard:
+  error-break:
+    warn:
+      onnx-enabled: false
+      web-top-k: 8
+      official-sources-only: true
+    break:
+      onnx-enabled: false
+      web-top-k: 4
+      use-cache-only: true
+fusion:
+  calibrator: platt
+  wpm:
+    p: 1.5
+    alpha: 0.7
+  source-weight:
+    ocr: 0.6
+
+retrieval:
+  ocr:
+    enabled: true
+    mime-allow: ["image/*","application/pdf"]
+    min-confidence: 0.6
+    k: 8
+
+
+# --- P0 gates & fusion calibrator (auto-appended) ---
+onnx:
+  enabled: true
+  maxConcurrent: 2
+  acquireTimeoutMs: 50
+
+gate:
+  minCitations: 3
+  sigmoid:
+    k: 8.0
+    x0: 0.75
+    pass: 0.90
+
+fusion:
+  cal:
+    web:    { a: 0.9, b: 0.0 }
+    vector: { a: 1.1, b: 0.0 }
+    kg:     { a: 1.0, b: 0.0 }
+
+probe:
+  search:
+    enabled: false
+  admin-token: ${PROBE_ADMIN_TOKEN:}
+
+rerank:
+  dpp:
+    enabled: true
+    topM: 12
+
+ocr:
+  enabled: true
+  minConf: 0.6
+
+
+
+reranker:
+  onnx-enabled: true
+  onnx-max-concurrent: 3
+  onnx-acquire-timeout-ms: 250
+  fallback-on-error: true
+
+retrieval:
+  ocr:
+    enabled: true
+
+rulebreak:
+  whitelist-bypass: true
+  brave-k-multiplier: 2.0
+
+url:
+  canonicalize:
+    enabled: true
+
+
+budget:
+  enabled: true
+  total-ms: 4000
+
+
+cache:
+  singleflight:
+    enabled: true
+
+
+gates:
+  preflight:
+    citation-min: 2
+    whitelist-tier-min: gov_or_scholar
+pii:
+  sanitizer:
+    enabled: true
