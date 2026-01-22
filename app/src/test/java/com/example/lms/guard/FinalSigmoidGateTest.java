@@ -17,11 +17,17 @@ flags: [sse]
 */
 public class FinalSigmoidGateTest {
   @Test
-  void pass_when_score_high_enough() {
-    FinalSigmoidGate gate = new FinalSigmoidGate(8.0, 0.75, 0.90, true);
-    // Compose with rrf=0.9, cross=0.9, trust=0.9 -> expect pass
-    assertThat(gate.pass(0.9, 0.9, 0.9)).isTrue();
-    // Lower score mix -> likely fail
-    assertThat(gate.pass(0.6, 0.6, 0.6)).isFalse();
+  void allow_when_score_above_threshold_in_strict_mode() {
+    FinalSigmoidGate gate = new FinalSigmoidGate(0.80, "strict");
+
+    double high = gate.score(0.1, 0.1, 0.1);
+    double low  = gate.score(1.0, 1.0, 1.0);
+
+    // high risk → score 낮음, low risk → score 높음인지 확인
+    assertThat(high).isGreaterThan(0.80);
+    assertThat(low).isLessThan(0.80);
+
+    assertThat(gate.allow(high)).isTrue();
+    assertThat(gate.allow(low)).isFalse();
   }
 }

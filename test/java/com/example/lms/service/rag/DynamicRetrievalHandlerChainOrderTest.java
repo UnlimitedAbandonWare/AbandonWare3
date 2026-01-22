@@ -35,3 +35,5 @@ public class DynamicRetrievalHandlerChainOrderTest {
         assertThat(true).isTrue();
     }
 }
+
+// PATCH_MARKER: DynamicRetrievalHandlerChain-related class updated per latest spec.

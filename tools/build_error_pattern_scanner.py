@@ -3,6 +3,10 @@ import os, re, json, sys, datetime, glob, collections
 
 PATTERNS = [
     ("cannot_find_symbol", r"cannot find symbol", "compile", "의존성/임포트 누락, 또는 JDK 릴리즈 불일치"),
+    ("illegal_escape_character", r"error:\s+illegal\s+escape\s+character", "compile", "정규식 이스케이프(역슬래시) 잘못으로 인한 Java 컴파일 오류"),
+    ("javac_illegal_start_of_type", r"illegal start of type", "compile", "Javac 파서 오류: 메서드/클래스 바깥에 잘못된 토큰이 있거나 중괄호(}) 정리가 안 된 경우"),
+    ("javac_parser_expected_type", r"class, interface, enum, or record expected", "compile", "Javac 파서 오류: 클래스/인터페이스/enum/record 선언 위치가 잘못되었거나, 이전 블록이 제대로 닫히지 않았습니다."),
+    ("timeout_missing_import", r"symbol:\s+class\s+TimeoutException", "compile", "TimeoutException 임포트 누락 가능성 (java.util.concurrent.TimeoutException)."),
     ("package_does_not_exist", r"package .* does not exist", "compile", "의존성 누락 혹은 잘못된 groupId/artifactId"),
     ("maven_compiler_failure", r"Failed to execute goal .*maven-compiler-plugin.*", "compile", "maven-compiler-plugin 설정/자바 버전 확인"),
     ("gradle_could_not_resolve", r"Could not resolve all files for configuration", "deps", "리포지토리/버전 캐시 문제 또는 네트워크"),

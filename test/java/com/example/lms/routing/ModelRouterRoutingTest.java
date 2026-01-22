@@ -112,4 +112,14 @@ public class ModelRouterRoutingTest {
         ChatModel chosen = router.route(null, null, "standard", 2000);
         assertSame(high, chosen, "should upgrade when maxTokens is ≥ 1536");
     }
+
+
+private String normalizeModelId(String modelId) {
+    if (modelId == null || modelId.isBlank()) return "qwen2.5-7b-instruct";
+    String id = modelId.trim().toLowerCase();
+    if (id.equals("qwen2.5-7b-instruct") || id.equals("gpt-5-chat-latest") || id.equals("gemma3:27b")) return "qwen2.5-7b-instruct";
+    if (id.contains("llama-3.1-8b")) return "qwen2.5-7b-instruct";
+    return modelId;
+}
+
 }

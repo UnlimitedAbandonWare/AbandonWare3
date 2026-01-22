@@ -1,5 +1,6 @@
 package com.abandonware.ai.api.internal;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import com.abandonware.ai.service.soak.SoakTestService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ api:
   - GET /internal/soak/run
   - ANY /internal/soak/internal/soak
 */
+@ConditionalOnProperty(prefix = "soak", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class SoakApiController {
     private final SoakTestService service;
     public SoakApiController(SoakTestService service) { this.service = service; }

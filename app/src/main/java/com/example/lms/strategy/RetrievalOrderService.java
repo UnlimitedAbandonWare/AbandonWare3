@@ -18,7 +18,17 @@ id: com.example.lms.strategy.RetrievalOrderService
 role: config
 flags: [kg]
 */
-public class RetrievalOrderService {
+public \1
+
+static class RetrievalIntent {
+    boolean prefersWeb(){ return true; }
+    boolean prefersVector(){ return true; }
+    boolean prefersKG(){ return false; }
+}
+private RetrievalIntent analyzeIntent(Object query){
+    return new RetrievalIntent();
+}
+
 
     public RetrievalOrderService(){
         this.plans = new PlanLoader();

@@ -122,6 +122,36 @@
       "fix": [
         "Use escape for quotes: s.replace(\"\\\"\", \"\\\\\\\"\") and replace newlines to space."
       ]
+    },
+    {
+      "id": "CHATWORKFLOW_LOG_DEBUG_QUOTE_TYPO",
+      "match": {
+        "contains_all": [
+          "ChatWorkflow.java",
+          "error: ')' expected",
+          "[Domain] query="
+        ]
+      },
+      "fix": [
+        "ChatWorkflow.java에서 log.debug 문자열을 하나의 문자열로 유지해야 합니다. 예) log.debug(\"[Domain] query={}, category={}, domain={}, profile={}\", ...).",
+        "query= 뒤에 잘못 들어간 따옴표(\")를 제거하거나, 따옴표가 필요하다면 Java 문자열 안에서 \\\" 처럼 이스케이프 처리하세요.",
+        "재발 방지: gradle/buildErrorGuard.gradle.kts의 preflightFixes에 query=\\\"{}\\\", → query={}, 자동 교정 규칙을 추가하는 방식도 유효합니다."
+      ],
+      "notes": "SLF4J placeholder에 잘못된 따옴표 삽입으로 Java parser error가 발생하는 패턴. (demo-1 ChatWorkflow 661라인 케이스)"
+    },
+    {
+      "id": "MISSING_IMPORT__TimeoutException",
+      "match": {
+        "contains_all": [
+          "cannot find symbol",
+          "class TimeoutException"
+        ]
+      },
+      "fix": [
+        "해당 소스 파일 상단에 'import java.util.concurrent.TimeoutException;'를 추가하세요.",
+        "Reactor/WebClient 타임아웃을 처리하는 코드라면, TimeoutException 유형이 올바른지 확인하세요."
+      ],
+      "notes": "demo-1 NaverSearchService.isRetryable() 빌드 오류(TimeoutException 미임포트)에서 추출된 패턴."
     }
   ]
 }

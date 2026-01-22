@@ -1,3 +1,8 @@
+# MERGE_HOOK:PROJ_AGENT::FIM15
+llm:
+  provider: local
+  model: ${llm.high.model:${llm.chat-model}}
+
 id: brave.v1
 retrieval:
   webTopK: [12, 18, 24]
@@ -11,3 +16,6 @@ safety:
 budget:
   timeMs: 3500
   onnxMaxConcurrent: 4
+
+guard:
+  profile: PROFILE_MEMORY

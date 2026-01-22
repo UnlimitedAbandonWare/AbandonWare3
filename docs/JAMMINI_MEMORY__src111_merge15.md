@@ -49,7 +49,6 @@
 
 * 네이버 웹검색 헤징/타임아웃/캐시
   - 구현: service/NaverSearchService.java, service/rag/AnalyzeWebSearchRetriever.java
-  - 설정: naver.hedge.enabled, naver.hedge.delay-ms, naver.search.timeout-ms, naver.search.web-top-k
 
 * 적응형 번역(리액티브) API
   - POST /api/adaptive-translate

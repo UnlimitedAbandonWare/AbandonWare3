@@ -14,15 +14,26 @@ PATTERNS = [
     ("GradleBuildFailed", r'BUILD FAILED|> Task .+ FAILED|Execution failed for task'),
     ("GradleDependencyNotFound", r'Could not (resolve|find) (?:any )?version for|Could not find [^ ]+:[^ ]+:[^ ]+'),
     ("GradlePluginNotFound", r'Plugin [\'"][^\'"]+[\'"] not found'),
+    ("GradleLmsCoreModuleNotFound", r':lms-core not found\.'),
     ("MavenBuildFailed", r'\[ERROR\] BUILD FAILURE|\[ERROR\] Failed to execute goal'),
     ("JavacCannotFindSymbol", r'error: cannot find symbol'),
+    ("JavacReferenceAmbiguous", r'reference to \w+ is ambiguous'),
+    ("JavacChatResultMoved", r'ChatService\.ChatResult'),
+    ("JavacMetadataGetRemoved", r'location:\s+variable\s+metadata\s+of\s+type\s+Metadata|symbol:\s+method\s+get\(String\)'),
+    ("JavacMissingHelper_composeEvidenceOnlyAnswer", r'composeEvidenceOnlyAnswer\('),
+    ("JavacTimeoutMissingImport", r'symbol:\s+class\s+TimeoutException'),
     ("JavacPackageDoesNotExist", r'error: package [\w\.]+ does not exist'),
     ("JavacDuplicateClass", r'error: duplicate class:|duplicate class'),
     ("JavacIncompatibleTypes", r'error: incompatible types'),
+    ("JavacIncompatibleTypesTextSegment", r'incompatible types:\s+String cannot be converted to TextSegment'),
+    ("JavacInferenceVariableBounds", r"inference variable [A-Z]\w* has incompatible bounds"),
     ("JavacBadSourceFile", r'bad source file: .* file does not contain class'),
     ("JavacClassInterfaceExpected", r'(class|interface|enum|record) expected'),
     ("JavacIllegalStartOfType", r'illegal start of (type|expression)'),
     ("JavacMissingSemicolon", r"';' expected"),
+    ("JavacLambdaLocalNotFinal", r"error: local variables referenced from a lambda expression must be final or effectively final"),
+    ("JavacOrphanedCase", r"error: orphaned case"),
+    ("JavacCaseDefaultOrBraceExpected", r"error: case, default, or '}' expected"),
     ("KotlinUnresolvedReference", r'Unresolved reference:'),
     ("KotlinTypeMismatch", r'Type mismatch'),
     ("TestFailures", r'There were failing tests|FAILURES!!!'),
@@ -32,6 +43,8 @@ PATTERNS = [
     ("NoSuchMethodError", r'NoSuchMethodError'),
     ("ClassNotFound", r'ClassNotFoundException|NoClassDefFoundError')
 ]
+
+PATTERNS.append(("JavacMethodArgMismatch", r"method .* in class .* cannot be applied to given types"))
 
 LOG_EXTS = ('.log', '.txt', '.out', '.err', '.stderr', '.stdout')
 

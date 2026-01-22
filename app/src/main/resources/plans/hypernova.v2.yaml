@@ -1,3 +1,8 @@
+# MERGE_HOOK:PROJ_AGENT::FIM15
+llm:
+  provider: local
+  model: ${llm.high.model:${llm.chat-model}}
+
 meta:
   id: hypernova.v2
   description: "Hypernova: TWPM+CVaR+Softmax Clamp, DPP 다양성, 게이트 엄격화 (전역 파라미터화)"

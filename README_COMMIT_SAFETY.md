@@ -3,9 +3,9 @@
 This repository was sanitized to prevent accidental secret leaks.
 
 ## What changed
-- Sanitized `src/main/resources/application.properties`: secrets moved to `${ENV_VAR}` placeholders (no hardcoded values).
+- Removed `src/main/resources/application.properties` (contains real secrets).
 - Removed `src/main/resources/keystore.p12` (sensitive binary).
-- `src/main/resources/application-example.yml` and `.env.example` document the placeholders.
+- Added `src/main/resources/application.properties.example` with `${ENV_VAR}` placeholders.
 - Strengthened `.gitignore` to hard-block secret patterns.
 - Added `src/main/resources/keystore.README.txt` placeholder.
 

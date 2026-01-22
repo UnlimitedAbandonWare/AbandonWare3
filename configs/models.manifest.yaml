@@ -2,15 +2,15 @@ version: "2025-09-30"
 
 # Bindings used by the router / bridge
 bindings:
-  default: "gpt-4o-mini"
+  default: "gpt-4"
   moe:     "anthropic/claude-3.5-sonnet"
 
 aliases:
-  vision: "gpt-4o-mini"
+  vision: "gpt-4"
   cheap:  "deepseek/deepseek-chat"
 
 models:
-  - id: "gpt-4o-mini"
+  - id: "gpt-4"
     provider: "openai"
     endpoint:
       type: "openai_compat"

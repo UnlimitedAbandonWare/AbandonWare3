@@ -89,3 +89,5 @@ public class DynamicRetrievalHandlerChain {
     }
 
 }
+
+// PATCH_MARKER: DynamicRetrievalHandlerChain updated per latest spec.

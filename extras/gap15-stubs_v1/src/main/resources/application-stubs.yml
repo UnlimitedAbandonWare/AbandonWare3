@@ -117,12 +117,13 @@ onnx:
 budget:
   request-time-ms: 3500
 naver:
-  hedge:
-    enabled: true
-    delay-ms: 120
   search:
     timeout-ms: 1200
     web-top-k: 12
+
+  filters:
+    domain-policy: boost
+    enable-domain-filter: false
 ocr:
   enabled: true
   min-confidence: 0.78
@@ -144,3 +145,37 @@ gate:
 upstash:
   cache:
     ttl-seconds: 3600
+llm:
+  base-url: http://localhost:11434/v1
+  api-key: dummy
+  chat-model: gemma3:27b
+
+  provider: local
+  # MERGED_DUP llm.base-url :: base-url: http://localhost:11434/v1   # 3090-only endpoint
+  # MERGED_DUP llm.provider :: provider: local
+
+train_idle:
+  enabled: true
+
+autolearn:
+  enabled: true
+
+fallback:
+  enabled: false
+
+onnx:
+  enabled: true
+  gpu-id: 0
+  max-concurrency: 2
+
+zsys:
+  onnx:
+    enabled: true
+    gpu-id: 0
+    max-concurrency: 2
+
+jammini:
+  guard:
+    profile: PROFILE_MEMORY
+  memory:
+    progressive: true

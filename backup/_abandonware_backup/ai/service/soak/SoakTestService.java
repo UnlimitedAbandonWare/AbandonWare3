@@ -1,5 +1,6 @@
 package com.abandonware.ai.service.soak;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,6 +17,7 @@ import java.util.*;
 id: com.abandonware.ai.service.soak.SoakTestService
 role: service
 */
+@ConditionalOnProperty(prefix = "soak", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class SoakTestService {
     public Map<String, Object> run(int k, String topic) {
         Map<String, Object> m = new LinkedHashMap<>();

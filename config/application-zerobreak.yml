@@ -16,12 +16,13 @@ zerobreak:
     token: X-ZeroBreak-Token
     policy: X-ZeroBreak-Policy
 naver:
-  hedge:
-    enabled: true
-    delay-ms: 120
   search:
     timeout-ms: 1200
     web-top-k: 12
+
+  filters:
+    domain-policy: boost
+    enable-domain-filter: false
 retrieval:
   vector:
     enabled: true
@@ -50,3 +51,34 @@ gate:
 upstash:
   cache:
     ttl-seconds: 3600
+llm:
+  base-url: https://api.groq.com/openai/v1
+  api-key: ${LLM_API_KEY:dummy}
+  chat-model: gpt-4
+
+  provider: groq
+  # MERGED_DUP llm.base-url :: base-url: http://localhost:11434/v1   # 3090-only endpoint
+  # MERGED_DUP llm.provider :: provider: local
+
+selfask:
+  enabled: false
+
+fallback:
+  enabled: false
+
+onnx:
+  enabled: true
+  gpu-id: 0
+  max-concurrency: 2
+
+zsys:
+  onnx:
+    enabled: true
+    gpu-id: 0
+    max-concurrency: 2
+
+jammini:
+  guard:
+    profile: PROFILE_MEMORY
+  memory:
+    progressive: true

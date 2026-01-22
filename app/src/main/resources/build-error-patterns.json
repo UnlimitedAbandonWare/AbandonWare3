@@ -11,6 +11,22 @@
       "regex": "incompatible types: (int|boolean) cannot be converted to CAP#1",
       "severity": "high",
       "advice": "Map<?,?>.getOrDefault(key, 10/true)와 같은 기본값은 제네릭 캡처와 충돌. 값을 꺼낸 후 타입 검사로 기본값을 적용하세요."
+    },
+    {
+      "id": "stuff3_missing_helpers",
+      "description": "Gradle Java compile error: missing helper methods in DomainWhitelist / HybridRetriever (extractUrl, extractHost, isCommunity, isBanned).",
+      "category": "java-compile",
+      "match": {
+        "contains": [
+          "HybridRetriever.java",
+          "DomainWhitelist.java",
+          "error: cannot find symbol",
+          "extractUrl(String)",
+          "extractHost(String)",
+          "isCommunity(String)",
+          "isBanned(String)"
+        ]
+      }
     }
   ]
 }

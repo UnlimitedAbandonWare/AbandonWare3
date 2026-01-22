@@ -1,5 +1,6 @@
 package com.example.lms.probe;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.List;
  * Exploratory soak runner: replace with your own engine wiring.
  * Note: @Disabled by default to avoid hitting external services in CI.
  */
+@ConditionalOnProperty(prefix = "soak", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class SearchSoakRunner {
 
     static final List<String> QUERIES = Arrays.asList(

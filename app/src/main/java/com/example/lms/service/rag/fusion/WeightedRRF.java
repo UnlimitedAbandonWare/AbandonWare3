@@ -6,7 +6,18 @@ import java.util.*;
  * Weighted Reciprocal Rank Fusion.
  * Self-contained, no external calibrator deps to keep the app module buildable.
  */
-public class WeightedRRF {
+\1
+
+private java.util.List<Double> weights = java.util.Arrays.asList(1.0,1.0,1.0);
+public void setWeights(java.util.List<Double> w){ if(w!=null && !w.isEmpty()) this.weights = w; }
+private double weightFor(String source){
+    if(source==null) return 1.0;
+    String s = source.toLowerCase();
+    if(s.contains("kg")) return 1.2;
+    if(s.contains("vector")) return 0.8;
+    return 1.0;
+}
+
     private Object externalCanonicalizer; // com.example.lms.service.rag.canon.RerankCanonicalizer
     public void setExternalCanonicalizer(Object can){ this.externalCanonicalizer = can; }
 

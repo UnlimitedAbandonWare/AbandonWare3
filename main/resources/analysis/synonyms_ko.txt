@@ -1,4 +1,0 @@
-# default synonyms
-성능,퍼포먼스,KPI,지표
-지연,레이턴시,응답시간
-백오프,재시도,Retry

@@ -13,15 +13,39 @@ def load_patterns():
 def scan_log(log_text, patterns):
     hits = []
     for p in patterns:
-        for m in re.finditer(p["regex"], log_text, re.IGNORECASE|re.MULTILINE):
-            group = m.group(1) if m.lastindex else None
+        # 1) Regex-based patterns (default)
+        if "regex" in p:
+            for m in re.finditer(p["regex"], log_text, re.IGNORECASE|re.MULTILINE):
+                group = m.group(1) if m.lastindex else None
+                hits.append({
+                    "id": p.get("id", "unknown"),
+                    "pos": m.start(),
+                    "group": group,
+                    "severity": p.get("severity","info"),
+                    "msg": p.get("explain") or p.get("description") or "",
+                    "hint": p.get("fix_hint") or ""
+                })
+            continue
+
+        # 2) Contains-based patterns (compat: match.contains / match.contains_all / match.contains_any)
+        match = p.get("match") or {}
+        contains_all = match.get("contains_all") or match.get("contains") or []
+        contains_any = match.get("contains_any") or []
+
+        ok = False
+        if contains_all:
+            ok = all((s in log_text) for s in contains_all)
+        elif contains_any:
+            ok = any((s in log_text) for s in contains_any)
+
+        if ok:
             hits.append({
-                "id": p["id"],
-                "pos": m.start(),
-                "group": group,
+                "id": p.get("id", "unknown"),
+                "pos": -1,
+                "group": None,
                 "severity": p.get("severity","info"),
-                "msg": p["explain"],
-                "hint": p["fix_hint"]
+                "msg": p.get("explain") or p.get("description") or "",
+                "hint": p.get("fix_hint") or p.get("hint") or ""
             })
     return hits
 

@@ -1,9 +1,19 @@
+# MERGE_HOOK:PROJ_AGENT::FIM15
+llm:
+  provider: local
+  model: ${llm.high.model:${llm.chat-model}}
+
 name: AP11_FINANCE_SPECIAL
 version: '1'
 params:
   domain: finance
   officialSourcesOnly: true
-  web_top_k: 20
+  allowWeb: true
+  allowRag: true
+  webTopK: 20
+  use_cross_encoder: true
+  rerank_backend: auto
+  rerank_top_k: 12
 chain:
 - alias_correct
 - retrieve_web_official
@@ -25,5 +35,8 @@ probe:
 
 
 retrieval:
+  order: [web, vector]
+  web:
+    enabled: true
   vector:
     enabled: true

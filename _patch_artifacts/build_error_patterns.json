@@ -1196,6 +1196,22 @@
       "desc": "SnakeYAML duplicate key in application.yml",
       "regex": "DuplicateKeyException.*duplicate key\\s+(?<key>[A-Za-z0-9_.-]+)",
       "fix": "normalize_yaml(application.yml)"
+    },
+    {
+      "id": "stuff3_missing_helpers",
+      "description": "Gradle Java compile error: missing helper methods in DomainWhitelist / HybridRetriever (extractUrl, extractHost, isCommunity, isBanned).",
+      "category": "java-compile",
+      "match": {
+        "contains": [
+          "HybridRetriever.java",
+          "DomainWhitelist.java",
+          "error: cannot find symbol",
+          "extractUrl(String)",
+          "extractHost(String)",
+          "isCommunity(String)",
+          "isBanned(String)"
+        ]
+      }
     }
   ]
 }
