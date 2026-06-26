@@ -8,6 +8,8 @@ import com.example.lms.search.TraceStore;
 import com.example.lms.service.guard.GuardContext;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,16 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AllOpenBreakersFieldPolicyTest {
+
+    @Test
+    void keysPolicyInvalidValueFallbackLeavesFixedStageBreadcrumb() throws Exception {
+        String source = Files.readString(Path.of(
+                "main/java/com/example/lms/infra/resilience/AllOpenBreakersKeysPolicy.java"));
+
+        assertTrue(source.contains("traceSuppressed(\"allOpenBreakersKeysPolicy.parse\", ignore);"));
+        assertTrue(source.contains(
+                "TraceStore.put(\"resilience.allOpenKeysPolicy.suppressed.\" + safeStage, true);"));
+    }
 
     @Test
     void keysAlwaysIncluded_evenWhenKeysPolicyMisconfigured_whenNoOpenBreakers() {
