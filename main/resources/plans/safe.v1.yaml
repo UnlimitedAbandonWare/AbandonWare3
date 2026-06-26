@@ -1,7 +1,0 @@
-retrieval:
-  k: { web: 8, vector: 4, kg: 2 }
-  officialSourcesOnly: true
-rerank:
-  onnx: { enabled: false, maxConcurrency: 1 }
-gates:
-  citationMin: 2

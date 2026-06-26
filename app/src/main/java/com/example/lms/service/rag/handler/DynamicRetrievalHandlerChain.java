@@ -13,6 +13,7 @@ public class DynamicRetrievalHandlerChain {
         // Default ordering: Vector -> Web -> KG
         stages.add("VECTOR");
         stages.add("WEB");
+        stages.add("EXPERT_OPEN");
         stages.add("DPP");
         stages.add("ONNX");
         stages.add("KG");
@@ -23,3 +24,5 @@ public class DynamicRetrievalHandlerChain {
         return Collections.unmodifiableList(stages);
     }
 }
+
+// PATCH_MARKER: DynamicRetrievalHandlerChain updated per latest spec.

@@ -33,6 +33,5 @@
 
 ## 5) 안전 실행
 - 외부 API 키/시크릿은 환경변수로 주입(예: `UPSTASH_REDIS_URL`, `NAVER_SEARCH_KEY`).
-- 웹검색/캐시 토글: `naver.hedge.enabled`, `naver.search.timeout-ms`, `upstash.cache.ttl-seconds`.
 
 (자동화 파이프라인이 이 파일을 읽어 절차를 그대로 수행하면 됩니다.)

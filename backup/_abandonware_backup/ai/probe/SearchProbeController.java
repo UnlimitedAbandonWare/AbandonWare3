@@ -29,6 +29,7 @@ api:
   - ANY /api/probe/api/probe
 flags: [probe.search.enabled]
 */
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name="probe.search.enabled", havingValue="true")
 public class SearchProbeController {
 
     @Value("${probe.search.enabled:false}")

@@ -26,10 +26,13 @@ LOG_PATTERNS = {
     "java_compilation_failed": re.compile(r"\d+\s+error(?:s)?\s*$", re.I | re.M),
     "java_illegal_start": re.compile(r"illegal start of expression", re.I),
     "java_incompatible_types": re.compile(r"incompatible types:", re.I),
+    "java_method_arg_mismatch": re.compile(r"method\s+.*\s+in\s+class\s+.*\s+cannot\s+be\s+applied\s+to\s+given\s+types", re.I),
+    "java_reference_ambiguous": re.compile(r"reference to\s+\w+\s+is\s+ambiguous", re.I),
     "java_unreachable_statement": re.compile(r"unreachable statement", re.I),
     "lombok_missing": re.compile(r"Lombok processor not found|package lombok does not exist", re.I),
     "java_version_mismatch": re.compile(r"Unsupported class file major version|invalid target release", re.I),
     "regex_backref_stray": re.compile(r"illegal escape character|dangling meta character|Unclosed group", re.I),
+    "gradle_lms_core_not_found": re.compile(r":lms-core not found|project\s+:lms-core\s+not\s+found|Project with path ':lms-core' could not be found|Could not resolve project :lms-core", re.I),
 }
 
 # Source scanning heuristics (code-driven)
@@ -53,10 +56,13 @@ SEVERITY_WEIGHTS = {
     "java_compilation_failed": 0.8,
     "java_illegal_start": 0.6,
     "java_incompatible_types": 0.5,
+    "java_method_arg_mismatch": 0.6,
+    "java_reference_ambiguous": 0.6,
     "java_unreachable_statement": 0.4,
     "lombok_missing": 0.6,
     "java_version_mismatch": 0.8,
     "regex_backref_stray": 0.3,
+    "gradle_lms_core_not_found": 0.6,
     "malformed_import_public": 0.4,
     "malformed_import_final": 0.4,
     "double_brace_init": 0.3,

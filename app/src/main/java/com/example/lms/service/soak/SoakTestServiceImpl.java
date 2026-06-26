@@ -1,5 +1,6 @@
 package com.example.lms.service.soak;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import java.nio.file.*;
 import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 id: com.example.lms.service.soak.SoakTestServiceImpl
 role: config
 */
+@ConditionalOnProperty(prefix = "soak", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class SoakTestServiceImpl {
     public SoakResult runAndPersist(int k, String topic){
         Map<String,Object> m = new LinkedHashMap<>();

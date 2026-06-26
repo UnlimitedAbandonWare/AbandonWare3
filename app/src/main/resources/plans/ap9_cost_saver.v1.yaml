@@ -1,7 +1,16 @@
+# MERGE_HOOK:PROJ_AGENT::FIM15
+llm:
+  provider: local
+  model: ${llm.high.model:${llm.chat-model}}
+
 name: AP9_COST_SAVER
 version: '1'
 params:
   use_cross_encoder: false
+  allowWeb: true
+  allowRag: true
+  rerank_backend: auto
+  rerank_top_k: 6
   budget_ms: 1200
 chain:
 - alias_correct
@@ -23,5 +32,8 @@ probe:
 
 
 retrieval:
+  order: [web, vector]
+  web:
+    enabled: true
   vector:
     enabled: true

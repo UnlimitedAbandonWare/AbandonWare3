@@ -17,3 +17,6 @@ probe:
 retrieval:
   vector:
     enabled: true
+
+guard:
+  profile: PROFILE_MEMORY

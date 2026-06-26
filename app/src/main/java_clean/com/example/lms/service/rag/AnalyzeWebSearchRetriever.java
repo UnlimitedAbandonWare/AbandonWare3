@@ -1,4 +1,8 @@
 package com.example.lms.service.rag;
+import com.example.lms.service.NaverSearchService;
+import org.apache.lucene.analysis.Analyzer;
+import com.example.lms.service.rag.pre.QueryContextPreprocessor;
+import com.example.lms.search.SmartQueryPlanner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +15,17 @@ import com.example.lms.service.rag.model.ContextSlice;
  * This avoids "empty list" wash and keeps the pipeline testable without network calls.
  */
 public class AnalyzeWebSearchRetriever {
+
+    public AnalyzeWebSearchRetriever(
+            Analyzer koreanAnalyzer,
+            NaverSearchService svc,
+            int maxTokens,
+            QueryContextPreprocessor preprocessor,
+            SmartQueryPlanner smartQueryPlanner
+    ) {
+        // No-op: this lightweight stub retriever does not use external services.
+    }
+
 
     public List<ContextSlice> search(String query, int topK) {
         if (query == null) query = "";

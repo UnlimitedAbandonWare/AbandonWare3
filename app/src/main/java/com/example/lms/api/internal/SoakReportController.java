@@ -1,5 +1,6 @@
 package com.example.lms.api.internal;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,7 @@ api:
   - GET /internal/soak/report
   - ANY /internal/soak/internal/soak
 */
+@ConditionalOnProperty(prefix = "soak", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class SoakReportController {
 
     @GetMapping(path = "/report", produces = MediaType.APPLICATION_JSON_VALUE)

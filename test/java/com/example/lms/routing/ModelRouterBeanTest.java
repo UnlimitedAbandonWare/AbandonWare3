@@ -41,4 +41,14 @@ public class ModelRouterBeanTest {
         assertNull(core, "core ModelRouter bean should not be present under the legacy-router profile");
         assertNotNull(adapter, "adapter ModelRouter bean should be present under the legacy-router profile");
     }
+
+
+private String normalizeModelId(String modelId) {
+    if (modelId == null || modelId.isBlank()) return "qwen2.5-7b-instruct";
+    String id = modelId.trim().toLowerCase();
+    if (id.equals("qwen2.5-7b-instruct") || id.equals("gpt-5-chat-latest") || id.equals("gemma3:27b")) return "qwen2.5-7b-instruct";
+    if (id.contains("llama-3.1-8b")) return "qwen2.5-7b-instruct";
+    return modelId;
+}
+
 }

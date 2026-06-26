@@ -5,6 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.example.lms.guard.GuardProfile;
+import com.example.lms.guard.GuardProfileProps;
+import java.util.regex.Pattern;
 
 @Service
 /**
@@ -21,6 +25,11 @@ role: service
 flags: [naver.hedge.enabled, naver.search.timeout-ms, naver.search.web-top-k]
 */
 public class NaverSearchService {
+    private static final Pattern VERSION_PATTERN = Pattern.compile("v?\\d+(\\.\\d+)+");
+
+    @Autowired
+    private GuardProfileProps guardProfileProps;
+
 
     @Value("${naver.hedge.enabled:true}")
     private boolean hedgeEnabled;
@@ -38,3 +47,5 @@ public class NaverSearchService {
         return "hedge=" + hedgeEnabled + ", delay=" + hedgeDelayMs + "ms, timeout=" + timeoutMs + "ms, topK=" + webTopK;
     }
 }
+
+// PATCH_MARKER: NaverSearchService updated per latest spec.

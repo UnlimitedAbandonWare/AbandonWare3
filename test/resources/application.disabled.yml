@@ -47,12 +47,13 @@ onnx:
 budget:
   request-time-ms: 3500
 naver:
-  hedge:
-    enabled: true
-    delay-ms: 120
   search:
     timeout-ms: 1200
     web-top-k: 12
+
+  filters:
+    domain-policy: boost
+    enable-domain-filter: false
 ocr:
   enabled: true
   min-confidence: 0.78
@@ -70,3 +71,24 @@ gate:
 upstash:
   cache:
     ttl-seconds: 3600
+
+llm:
+  base-url: http://localhost:11434/v1
+  api-key: dummy
+  chat-model: gemma3:27b
+
+  provider: local
+selfask:
+  enabled: false
+
+train_idle:
+  enabled: true
+
+autolearn:
+  enabled: true
+
+jammini:
+  guard:
+    profile: PROFILE_MEMORY
+  memory:
+    progressive: true

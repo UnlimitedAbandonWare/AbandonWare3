@@ -1,8 +1,18 @@
+# MERGE_HOOK:PROJ_AGENT::FIM15
+llm:
+  provider: local
+  model: ${llm.high.model:${llm.chat-model}}
+
 name: AP3_VEC_DENSE
 version: '1'
 params:
-  vector_only: true
-  vector_top_k: 15
+  vectorOnly: true
+  allowWeb: false
+  allowRag: true
+  vecTopK: 15
+  use_cross_encoder: false
+  rerank_backend: auto
+  rerank_top_k: 8
 chain:
 - alias_correct
 - retrieve_vector
@@ -22,5 +32,8 @@ probe:
 
 
 retrieval:
+  order: [vector]
+  web:
+    enabled: false
   vector:
     enabled: true

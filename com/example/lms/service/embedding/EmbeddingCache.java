@@ -10,7 +10,7 @@ public final class EmbeddingCache {
   private final long ttlMs;
   public EmbeddingCache(Duration ttl){ this.ttlMs = ttl.toMillis(); }
   public float[] getOrCompute(String key, java.util.function.Function<String,float[]> fn){
-    String norm = key==null? "" : key.trim().toLowerCase(Locale.ROOT).replaceAll("\s+"," ");
+    String norm = key==null? "" : key.trim().toLowerCase(Locale.ROOT).replaceAll("\\s+"," ");
     Entry e = map.get(norm); long now=System.currentTimeMillis();
     if(e!=null && now-e.at<ttlMs) return e.vec;
     float[] v = fn.apply(norm); map.put(norm, new Entry(v)); return v;

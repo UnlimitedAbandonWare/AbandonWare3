@@ -33,5 +33,49 @@
     "severity": "error",
     "explain": "YAML 구문 오류.",
     "fix_hint": "들여쓰기/콜론/탭 사용을 점검하세요."
+  },
+  {
+    "id": "java.missing_timeout_import",
+    "regex": "symbol:\\s+class\\s+TimeoutException",
+    "severity": "error",
+    "explain": "TimeoutException 클래스를 찾을 수 없습니다 (임포트 누락 가능성 높음).",
+    "fix_hint": "해당 소스 파일 상단에 'import java.util.concurrent.TimeoutException;'를 추가하고, 타임아웃 예외 처리가 의도한 동작인지 확인하세요."
+  },
+  {
+    "id": "java.illegal_escape_character",
+    "regex": "error:\\s+illegal\\s+escape\\s+character",
+    "severity": "error",
+    "explain": "Java 소스 코드에서 문자열 리터럴 안의 정규식 이스케이프가 잘못되어 컴파일이 실패했습니다.",
+    "fix_hint": "문제 라인의 문자열에서 정규식 기호 앞의 역슬래시를 두 번으로 늘리세요. 예: \"Inc\\\\.\" → Java 코드에서는 \"Inc\\\\\\\\.\" 처럼 작성해야 합니다 (Pattern.replaceAll 사용 시)."
+  },
+  {
+    "id": "java.slf4j_placeholder_quote_typo",
+    "regex": "\\[Domain\\]\\s+query=\"\\{\\}\\\",\\s*category=",
+    "severity": "error",
+    "explain": "SLF4J 로그 포맷 문자열에 따옴표(\")를 잘못 넣어 Java 구문 오류가 발생했습니다 (문자열이 중간에 닫혀버림).",
+    "fix_hint": "ChatWorkflow.java의 log.debug(\"[Domain] query=...\")에서 query= 뒤의 불필요한 따옴표를 제거하여 하나의 문자열로 만드세요. 예: [Domain] query={}, category={}, domain={}, profile={}"
+  },
+  {
+    "id": "stuff3_missing_helpers",
+    "description": "Gradle Java compile error: missing helper methods in DomainWhitelist / HybridRetriever (extractUrl, extractHost, isCommunity, isBanned).",
+    "category": "java-compile",
+    "match": {
+      "contains": [
+        "HybridRetriever.java",
+        "DomainWhitelist.java",
+        "error: cannot find symbol",
+        "extractUrl(String)",
+        "extractHost(String)",
+        "isCommunity(String)",
+        "isBanned(String)"
+      ]
+    }
+  },
+  {
+    "id": "java.naver_keys_csv_reassigned",
+    "regex": "error:\\s+variable\\s+naverKeysCsv\\s+might already have been assigned",
+    "severity": "error",
+    "explain": "NaverSearchService.java 생성자에서 final로 선언된 naverKeysCsv 필드에 값을 두 번 대입하려다가 발생한 컴파일 오류입니다.",
+    "fix_hint": "com.example.lms.service.patch.NaverSearchService 및 동일 클래스를 열어 naverKeysCsv 필드 선언의 final 키워드를 제거하고, CSV 파싱 실패 시 fallback 브리지 로직이 this.naverKeysCsv를 다시 설정할 수 있도록 수정하세요."
   }
 ]

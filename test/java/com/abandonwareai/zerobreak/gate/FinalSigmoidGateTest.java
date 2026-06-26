@@ -5,13 +5,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FinalSigmoidGateTest {
     @Test
-    void approveWhenAboveThreshold() {
-        FinalSigmoidGate g = new FinalSigmoidGate(0.90, 12.0, 0.65);
-        assertTrue(g.approve(0.80)); // sigmoid(0.8) with k=12, x0=0.65 ≈ 0.90+
+    void allowWhenCompositeScoreAboveThreshold() {
+        FinalSigmoidGate g = new FinalSigmoidGate(0.90, "strict");
+        double scoreHigh = g.score(0.1, 0.1, 0.1);
+
+        assertTrue(scoreHigh > 0.90);
+        assertTrue(g.allow(scoreHigh));
     }
+
     @Test
-    void rejectWhenBelow() {
-        FinalSigmoidGate g = new FinalSigmoidGate(0.90, 12.0, 0.65);
-        assertFalse(g.approve(0.60));
+    void rejectWhenBelowThreshold() {
+        FinalSigmoidGate g = new FinalSigmoidGate(0.90, "strict");
+        double scoreLow = g.score(1.0, 1.0, 1.0);
+
+        assertTrue(scoreLow < 0.90);
+        assertFalse(g.allow(scoreLow));
     }
 }

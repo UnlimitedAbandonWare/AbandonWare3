@@ -1,36 +1,45 @@
 package com.abandonware.ai.agent.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "retrieval.bm25")
-/**
- * [GPT-PRO-AGENT v2] - concise navigation header (no runtime effect).
- * Module: com.abandonware.ai.agent.config.Bm25Props
- * Role: config
- * Observability: propagates trace headers if present.
- * Thread-Safety: unknown.
- */
-/* agent-hint:
-id: com.abandonware.ai.agent.config.Bm25Props
-role: config
-*/
 public class Bm25Props {
-    private boolean enabled = false;
-    private String indexPath = "data/lucene";
-    private int topK = 20;
-    private String analyzer = "nori";
-    private int minSnippetChars = 160;
 
-    public boolean isEnabled() { return enabled; }
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
-    public String getIndexPath() { return indexPath; }
-    public void setIndexPath(String indexPath) { this.indexPath = indexPath; }
-    public int getTopK() { return topK; }
-    public void setTopK(int topK) { this.topK = topK; }
-    public String getAnalyzer() { return analyzer; }
-    public void setAnalyzer(String analyzer) { this.analyzer = analyzer; }
-    public int getMinSnippetChars() { return minSnippetChars; }
-    public void setMinSnippetChars(int minSnippetChars) { this.minSnippetChars = minSnippetChars; }
+    @Value("${bm25.topK:5}")
+    private int topK = 5;
+
+    @Value("${bm25.minSnippetChars:80}")
+    private int minSnippetChars = 80;
+
+    /**
+     * 오프라인/로컬 인덱싱시 최대 문서 수 제한.
+     * (너무 큰 TM 테이블을 그대로 인덱싱하는 것을 방지)
+     */
+    @Value("${bm25.maxDocs:20000}")
+    private int maxDocs = 20000;
+
+    public int getTopK() {
+        return topK;
+    }
+
+    public void setTopK(int topK) {
+        this.topK = topK;
+    }
+
+    public int getMinSnippetChars() {
+        return minSnippetChars;
+    }
+
+    public void setMinSnippetChars(int minSnippetChars) {
+        this.minSnippetChars = minSnippetChars;
+    }
+
+    public int getMaxDocs() {
+        return maxDocs;
+    }
+
+    public void setMaxDocs(int maxDocs) {
+        this.maxDocs = maxDocs;
+    }
 }

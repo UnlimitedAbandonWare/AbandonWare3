@@ -1,3 +1,8 @@
+# MERGE_HOOK:PROJ_AGENT::FIM15
+llm:
+  provider: local
+  model: ${llm.high.model:${llm.chat-model}}
+
 id: safe_autorun.v1
 k-allocation:
   web: 8
@@ -9,3 +14,6 @@ gates:
 rerank:
   bi-enabled: false
   onnx-enabled: false
+
+guard:
+  profile: PROFILE_MEMORY

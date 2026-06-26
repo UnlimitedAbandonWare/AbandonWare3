@@ -1,4 +1,5 @@
 package com.example.lms.service.soak;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import java.util.Map;
 /**
  * [GPT-PRO-AGENT v2] - concise navigation header (no runtime effect).
@@ -11,4 +12,5 @@ import java.util.Map;
 id: com.example.lms.service.soak.SoakResult
 role: config
 */
+@ConditionalOnProperty(prefix = "soak", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class SoakResult { public Map<String,Object> data; }

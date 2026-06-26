@@ -25,7 +25,7 @@ public class ZSystem {
         try {
             return f.get(millis, TimeUnit.MILLISECONDS);
         } catch(Exception e) {
-            f.cancel(true);
+            f.cancel(false);
             return fallback.get();
         } finally {
             ex.shutdownNow();
