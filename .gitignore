@@ -46,6 +46,8 @@ app/src/main/resources/application-*.properties
 *.der
 *.crt
 *.cer
+apikey*.txt
+/apikey.txt
 # 스캔 검출: 레포 내 키스토어 파일
 src/main/resources/keystore.p12
 # --- 4) 방어적 캐치올(설정 파일에 한정) ---
@@ -76,6 +78,8 @@ out/
 target/
 *.class
 *.log
+/bootrun-*.log
+/bootrun-*.pid
 # --- 6) IDE/OS 잡파일 ---
 .idea/
 *.iml
@@ -90,8 +94,8 @@ Thumbs.db
 # 과거 노출 정리:
 #  - pipx run detect-secrets scan > .secrets.baseline && pre-commit 설치 권장
 #  - git filter-repo --replace-text <(echo 'BEGIN PRIVATE KEY==>***REDACTED***')  # 예시
-# Hardened for safe Git publishing (2025-10-23)
-# Secrets guard: block concrete config files; commit only *-example templates.
+# Updated by GPT-5 Pro on 2025-10-23 07:10 UTC — hardened for safe Git publishing
+# --- [HOTFIX] Secrets guard: block concrete config files with real keys ---
 # Found real-looking keys under src/main/resources/application.properties.
 # These must not be tracked; ignore concrete files and commit *.example templates only.
 src/main/resources/application.properties
@@ -129,33 +133,127 @@ app/src/main/resources/application-machine.yml
 /**/*token*.*
 /**/*credential*.*
 /**/*api[-_]*key*.*
-# === Hardened additions ===
-# Prevent accidental commit of local kube, cloud, npm auth, etc.
-.npmrc
-.yarnrc
-.kube/
-.aws/
-.azure/
-.gcloud/
-.direnv/
-.python-version
-.tool-versions
-node_modules/
-dist/
-coverage/
-logs/
-data/**
-!data/README.md
+!scripts/git_secret_guard.ps1
 
-# --- begin: publish-safety block (added by sanitization) ---
-# Block concrete configs under main/resources (commit only *example)
-main/resources/application*.properties
-main/resources/application*.yml
-!main/resources/*example*
-main/resources/*.bak*
-app/src/main/resources/*.bak*
-# Optional: drop bulky analysis artifacts from VCS
-analysis/**
-build-logs/**
-__reports__/**
-# --- end: publish-safety block ---
+# --- Context purity / vector-memory anti-contamination ---
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.war
+*.zip
+*.tar
+*.tar.gz
+*.bak
+*.bak.*
+*.orig
+*.orig_*
+*.before_*
+*.before_dupmerge
+backup/
+**/backup/**
+_build_fix_report.json
+__reports__/
+/__archive__/
+/legacy-quarantine/
+/_patch_artifacts/
+build-logs/
+logs/
+AUTO_BUILD_*
+AUTO_PATTERN_*
+BUILD_ERROR_*
+BUILD_FIX_*
+BUILD_PATTERN_*
+BUILD_PATCH_*
+MERGE_REPORT_*
+MERGE_SUMMARY_*
+MERGELOG_*
+PATCH_REPORT_*
+PATCH_SUMMARY_*
+PATCH_APPLIED_*
+PATCH_NOTES_src111_*
+/CHANGELOG_*.md
+
+# --- Dual Codex PatchDrop exchange artifacts ---
+/__patch_drop__/*.patch
+/__patch_drop__/*.diff
+/__patch_drop__/*.log
+/__patch_drop__/*.out
+/__patch_drop__/*.err
+/__patch_drop__/applied/*.patch
+/__patch_drop__/applied/*.diff
+/__patch_drop__/applied/*.log
+/__patch_drop__/applied/*.out
+/__patch_drop__/applied/*.err
+!/__patch_drop__/README.md
+!/__patch_drop__/applied/README.md
+
+# --- Source governance hygiene v3 ---
+main/resources/keystore.p12
+main/resources/**/*.p12
+src/main/resources/**/*.p12
+apikey.ps1
+
+# --- Git publish guard: Desktop active root secrets ---
+# Keep real machine/profile secrets out of a fresh GitHub import.
+# Commit example/sample/template files only.
+main/resources/application-secrets.yml
+main/resources/application-local*.yml
+main/resources/application-local*.yaml
+main/resources/application-local*.properties
+main/resources/application-dev*.yml
+main/resources/application-dev*.yaml
+main/resources/application-dev*.properties
+main/resources/application-prod*.yml
+main/resources/application-prod*.yaml
+main/resources/application-prod*.properties
+main/resources/application-machine*.yml
+main/resources/application-machine*.yaml
+main/resources/application-machine*.properties
+main/resources/application.properties
+main/resources/bootstrap.properties
+main/resources/*.jks
+main/resources/*.keystore
+main/resources/*.p12
+main/resources/*.pfx
+main/resources/*.pem
+main/resources/*.key
+main/resources/*.der
+!main/resources/*example*.yml
+!main/resources/*example*.yaml
+!main/resources/*example*.properties
+!main/resources/*sample*.yml
+!main/resources/*sample*.yaml
+!main/resources/*sample*.properties
+!main/resources/*template*.yml
+!main/resources/*template*.yaml
+!main/resources/*template*.properties
+
+# Local secret-scan tool outputs.
+.secrets.baseline
+.gitleaks-report.*
+gitleaks-report.*
+secret-scan-report.*
+
+# Access-restricted generated agent bundles are not publishable source.
+.agents/skills/demo1-desktop-autonomous-safe-patch/
+agent-prompts/agents/demo1_desktop_autonomous_safe_patch/
+docs/agent/
+
+# Module-local machine profiles across archived or side modules.
+**/src/main/resources/application-local*.yml
+**/src/main/resources/application-local*.yaml
+**/src/main/resources/application-local*.properties
+**/src/main/resources/application-dev*.yml
+**/src/main/resources/application-dev*.yaml
+**/src/main/resources/application-dev*.properties
+**/src/main/resources/application-prod*.yml
+**/src/main/resources/application-prod*.yaml
+**/src/main/resources/application-prod*.properties
+**/src/main/resources/application-machine*.yml
+**/src/main/resources/application-machine*.yaml
+**/src/main/resources/application-machine*.properties
+!**/src/main/resources/*example*.yml
+!**/src/main/resources/*example*.yaml
+!**/src/main/resources/*example*.properties
+!**/src/main/resources/*sample*.yml
+!**/src/main/resources/*sample*.yaml
+!**/src/main/resources/*sample*.properties
