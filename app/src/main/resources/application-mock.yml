@@ -1,0 +1,80 @@
+spring:
+  profiles:
+    active: mock
+  datasource:
+    url: jdbc:h2:mem:nova;DB_CLOSE_DELAY=-1;MODE=LEGACY
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+  main:
+    allow-bean-definition-overriding: true
+
+# Disable external web calls by default in mock
+naver:
+  search:
+    enabled: false
+    timeout-ms: 1500
+  filters:
+    domain-policy: boost
+    enable-domain-filter: false
+retrieval:
+  web:
+    enabled: false
+  vector:
+    enabled: false
+
+onnx:
+  enabled: true
+  gpu-id: 0
+  max-concurrency: 2
+
+probe:
+  search:
+    enabled: true
+  admin-token: "dev-admin"
+
+upstash:
+  cache:
+    ttl-seconds: 300
+
+gate:
+  citation:
+    enabled: true
+    min: 1
+  finalSigmoid:
+    enabled: true
+    k: 12.0
+    x0: 0.0
+llm:
+  base-url: http://localhost:11434/v1
+  api-key: ${LLM_API_KEY:}
+  chat-model: gemma3:27b
+
+  provider: local
+  # MERGED_DUP llm.base-url :: base-url: http://localhost:11434/v1   # 3090-only endpoint
+  # MERGED_DUP llm.provider :: provider: local
+
+selfask:
+  enabled: false
+
+train_idle:
+  enabled: true
+
+autolearn:
+  enabled: true
+
+fallback:
+  enabled: false
+
+zsys:
+  onnx:
+    enabled: true
+    gpu-id: 0
+    max-concurrency: 2
+
+jammini:
+  guard:
+    profile: PROFILE_MEMORY
+  memory:
+    progressive: true

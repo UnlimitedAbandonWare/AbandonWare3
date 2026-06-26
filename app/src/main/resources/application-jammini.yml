@@ -1,0 +1,67 @@
+# extracted duplicate config blocks (auto-generated)
+
+onnx:
+  enabled: true
+  gpu-id: 0
+  max-concurrency: 2
+
+retrieval:
+  vector:
+    enabled: true
+
+probe:
+  search:
+    enabled: true
+
+
+# -- injected defaults (merge carefully) --
+
+zsys:
+  onnx:
+    enabled: true
+    gpu-id: 0
+    max-concurrency: 2
+llm:
+  base-url: http://localhost:11434/v1
+  api-key: ${LLM_API_KEY:}
+  chat-model: gemma3:27b
+
+  provider: local
+  # MERGED_DUP llm.base-url :: base-url: http://localhost:11434/v1   # 3090-only endpoint
+  # MERGED_DUP llm.provider :: provider: local
+
+selfask:
+  enabled: false
+
+train_idle:
+  enabled: true
+
+autolearn:
+  enabled: true
+
+fallback:
+  enabled: false
+vector:
+  routing:
+    topics:
+      default:
+        stores: [memory, domain, web]
+        weights:
+          memory: 0.4
+          domain: 0.4
+          web: 0.2
+        split:
+          memory: 3
+          domain: 3
+          web: 6
+
+jammini:
+  guard:
+    profile: PROFILE_MEMORY
+  memory:
+    progressive: true
+
+naver:
+  filters:
+    domain-policy: boost
+    enable-domain-filter: false

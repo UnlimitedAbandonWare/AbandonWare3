@@ -1,0 +1,81 @@
+spring:
+  config:
+    activate:
+      on-profile: hypernova
+nova:
+  next:
+    enabled: true
+    alpha-cvar: 0.15
+    lambda-cvar: 0.5
+    p0: 1.8
+    alpha-twpm: 0.2
+    k-total: 24
+    temp-softmax: 0.85
+    floor-web: 4
+    floor-vec: 4
+    floor-kg: 2
+onnx:
+  enabled: true
+  gpu-id: 0
+  max-concurrency: 2
+budget:
+  request-time-ms: 3500
+naver:
+  search:
+    timeout-ms: 1200
+    web-top-k: 12
+
+  filters:
+    domain-policy: boost
+    enable-domain-filter: false
+ocr:
+  enabled: true
+  min-confidence: 0.78
+probe:
+  search:
+    enabled: false
+  admin-token: ''
+retrieval:
+  vector:
+    enabled: true
+gate:
+  citation:
+    enabled: true
+    min: 3
+  finalSigmoid:
+    enabled: true
+    k: 12.0
+    x0: 0.0
+upstash:
+  cache:
+    ttl-seconds: 3600
+
+llm:
+  base-url: http://localhost:11434/v1
+  api-key: dummy
+  chat-model: gemma3:27b
+
+  provider: local
+  # MERGED_DUP llm.base-url :: base-url: http://localhost:11434/v1   # 3090-only endpoint
+  # MERGED_DUP llm.provider :: provider: local
+
+selfask:
+  enabled: false
+
+train_idle:
+  enabled: true
+
+autolearn:
+  enabled: true
+
+zsys:
+  onnx:
+    enabled: true
+    gpu-id: 0
+    max-concurrency: 2
+
+jammini:
+  guard:
+    profile: PROFILE_MEMORY
+  memory:
+    progressive: true

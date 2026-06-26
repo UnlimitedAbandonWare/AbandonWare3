@@ -1,0 +1,74 @@
+# Example profile for in-process llama.cpp (JNI) engine
+llm:
+  engine: llamacpp
+  # If you provide an absolute/relative path, it will be used directly.
+  # Otherwise this value is resolved under ./models/<value>
+  model-id: "${LLM_MODEL_PATH:./models/qwen2.5-0.5b-instruct-Q4_K_M.gguf}"
+  temperature: 0.7
+  max-tokens: 256
+  preload: true
+
+  # Optional performance knobs
+  threads: 8
+  gpu-layers: ${LLM_GPU_LAYERS:0}         # Set >0 to offload layers to GPU (requires CUDA/Metal build of jllama)
+  stop-strings: "User:,user:"
+  mirostat:
+    enabled: false
+    mode: 2
+
+  provider: local
+  base-url: http://localhost:11434/v1
+  api-key: dummy
+  chat-model: gemma3:27b
+  # MERGED_DUP llm.engine :: engine: llamacpp
+  model-path: ${LLM_MODEL_PATH:./models/default.gguf}
+  # MERGED_DUP llm.preload :: preload: true
+  autostart: true
+  # MERGED_DUP llm.threads :: threads: 8
+  # MERGED_DUP llm.gpu-layers :: gpu-layers: 20
+  max-concurrency: 2
+
+  # MERGED_DUP llm.chat-model :: chat-model: gpt-4
+
+  # MERGED_DUP llm.base-url :: base-url: ${LLM_BASE_URL:http://localhost:8000/v1}
+
+  # MERGED_DUP llm.api-key :: api-key: ${LLM_API_KEY:dummy}
+
+  # MERGED_DUP llm.base-url :: base-url: http://localhost:11434/v1   # 3090-only endpoint
+  # MERGED_DUP llm.provider :: provider: local
+
+spring:
+  main:
+    banner-mode: "off"
+
+# ---- llamacpp profile ----
+selfask:
+  enabled: false
+
+train_idle:
+  enabled: true
+
+autolearn:
+  enabled: true
+
+onnx:
+  enabled: true
+  gpu-id: 0
+  max-concurrency: 2
+
+zsys:
+  onnx:
+    enabled: true
+    gpu-id: 0
+    max-concurrency: 2
+
+jammini:
+  guard:
+    profile: PROFILE_MEMORY
+  memory:
+    progressive: true
+
+naver:
+  filters:
+    domain-policy: boost
+    enable-domain-filter: false
