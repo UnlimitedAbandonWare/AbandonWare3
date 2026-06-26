@@ -32,11 +32,8 @@
       <fileNamePattern>logs/trace.%d{yyyy-MM-dd}.ndjson</fileNamePattern>
       <maxHistory>7</maxHistory>
     </rollingPolicy>
-    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-      <providers>
-        <timestamp/>
-        <message/>
-      </providers>
+    <encoder>
+      <pattern>%msg%n</pattern>
     </encoder>
   </appender>
 

@@ -12,7 +12,6 @@ gates: { citationsMin: 3 }
 probe:
   search:
     enabled: false
-  admin-token: ''
 
 
 retrieval:

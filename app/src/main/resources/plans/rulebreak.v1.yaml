@@ -33,7 +33,6 @@ rulebreak:
 probe:
   search:
     enabled: false
-  admin-token: ''
 
 
 retrieval:

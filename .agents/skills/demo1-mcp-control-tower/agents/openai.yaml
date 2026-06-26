@@ -1,0 +1,3 @@
+display_name: Demo1 MCP Control Tower
+short_description: Coordinate Desktop, Mac mini, and Notebook safe-patch tools without shared-source edits.
+default_prompt: Use the demo1 MCP control tower toolbox to probe, plan, render PatchDrop bundles, search or restore archives, classify verification logs, and validate copied Mac mini/Notebook smoke evidence with redacted audit fields.

@@ -17,6 +17,7 @@ Usage:
 from __future__ import annotations
 
 import glob
+import hashlib
 import json
 import os
 import re
@@ -38,6 +39,20 @@ def write_text(path: str, content: str) -> None:
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
+
+
+def hash_value(value: Any) -> str:
+    raw = "" if value is None else str(value)
+    return "hash:" + hashlib.sha256(raw.encode("utf-8", errors="ignore")).hexdigest()[:16]
+
+
+def safe_error(error: BaseException) -> Dict[str, Any]:
+    message = "" if error is None else str(error)
+    return {
+        "errorType": error.__class__.__name__ if error is not None else "unknown",
+        "errorHash": hash_value(message),
+        "errorLength": len(message),
+    }
 
 
 def patch_groovy(txt: str, injects: List[str]) -> str:
@@ -146,7 +161,7 @@ def main(argv: List[str]) -> int:
                         write_text(path, new_txt)
                         applied.append({"pattern": p.get("id"), "file": path})
                 except Exception as e:
-                    applied.append({"pattern": p.get("id"), "file": path, "error": str(e)})
+                    applied.append({"pattern": p.get("id"), "file": path, **safe_error(e)})
 
     out = {
         "applied": applied,

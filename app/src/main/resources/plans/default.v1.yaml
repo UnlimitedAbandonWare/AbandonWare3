@@ -22,7 +22,6 @@ constraints:
 probe:
   search:
     enabled: false
-  admin-token: ''
 
   vector:
     enabled: true
